@@ -295,6 +295,48 @@ def build_model(variant, **kwargs):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# YOLOv8-ESI: SE Attention after each C2f
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+class C2fWithSE(nn.Module):
+    """C2f followed by SE attention — drop-in replacement for C2f."""
+    def __init__(self, c2f_module, reduction=16):
+        super().__init__()
+        self.c2f = c2f_module
+        self.se = SEBlock(c2f_module.cv2.conv.out_channels, reduction=reduction)
+        self.i = c2f_module.i
+        self.f = c2f_module.f
+        self.type = 'C2fWithSE'
+    def forward(self, x):
+        return self.se(self.c2f(x))
+
+
+def _add_se_blocks(model, reduction=16):
+    """Add SE attention blocks after each C2f in the model."""
+    layers = list(model.model)
+    for i, layer in enumerate(layers):
+        if isinstance(layer, C2f):
+            c2 = layer.cv2.conv.out_channels
+            layers[i] = C2fWithSE(layer, reduction=reduction)
+            print(f"  Wrapped layer {i}: C2f({c2}) → C2fWithSE")
+    model.model = nn.Sequential(*layers)
+    total = sum(p.numel() for p in model.parameters())
+    print(f"\nYOLOv8-ESI (SE-augmented) built:")
+    print(f"  Parameters: {total:,} ({total/1e6:.2f}M)")
+    return model
+
+
+def build_yolov8_esi_full(pretrained='yolov8n.pt'):
+    """Build YOLOv8-ESI: YOLOv8n backbone + SE attention after each C2f."""
+    base_model = YOLO(pretrained)
+    model = base_model.model
+    print("Building YOLOv8-ESI with SE attention blocks...")
+    print("  (Pretrained YOLOv8n weights preserved — only SE layers are new)")
+    return _add_se_blocks(model)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Comparison Table
 # ══════════════════════════════════════════════════════════════════════════════
 
