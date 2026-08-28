@@ -1,0 +1,10 @@
+path: datasets/noaa-debris/h8
+train: images/train
+val: images/val
+
+nc: 1
+names: ['marine_debris']
+
+# H8 Dataset = F6 (debris+bg) + G7 (hard negatives)
+# F6: 561 debris + 549 bg from E3+E4+YOLO
+# G7: 2000 hard negative BG from raw TIFFs
