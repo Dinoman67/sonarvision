@@ -62,47 +62,27 @@ def _count_params(model):
 def _get_layers(model):
     """Extract nn.Sequential layers from a YOLO model.
     
-    Handles both old (model.model is Sequential) and new
-    (model.model is DetectionModel, model.model.model is Sequential) ultralytics.
+    In ultralytics, model.model is either:
+    - nn.Sequential (older / some versions)
+    - DetectionModel whose .model is nn.Sequential (newer versions)
     """
     m = model.model
-    # Try standard ultralytics structure: model.model.model = Sequential
-    if hasattr(m, 'model'):
-        inner = m.model
-        if hasattr(inner, '__iter__') and not isinstance(inner, nn.Module):
-            # It's a list-like, not a Module
-            return list(inner)
-        elif hasattr(inner, 'model'):
-            # Triple nested: model.model.model.model
-            return list(inner.model)
-        elif isinstance(inner, nn.Sequential):
-            return list(inner)
-    # Fallback: model.model itself is iterable
-    if hasattr(m, '__iter__') and not isinstance(m, nn.Module):
+    if isinstance(m, nn.Sequential):
         return list(m)
-    elif isinstance(m, nn.Sequential):
-        return list(m)
-    
-    # Last resort: check all attributes
-    for attr_name in ['model', '_modules']:
-        if hasattr(m, attr_name):
-            obj = getattr(m, attr_name)
-            if isinstance(obj, nn.Sequential):
-                return list(obj)
-    
-    raise TypeError(f'Cannot extract layers from {type(m)}. Available: {[a for a in dir(m) if not a.startswith("_")][:20]}')
+    if hasattr(m, 'model') and isinstance(m.model, nn.Sequential):
+        return list(m.model)
+    raise TypeError(f'Cannot extract layers from {type(m)}')
 
 
 def _set_layers(model, layers):
     """Set nn.Sequential layers back into a YOLO model."""
     m = model.model
-    if hasattr(m, 'model'):
-        inner = m.model
-        if isinstance(inner, nn.Sequential):
-            m.model = nn.Sequential(*layers)
-            return
-    # Fallback
-    model.model = nn.Sequential(*layers)
+    if isinstance(m, nn.Sequential):
+        model.model = nn.Sequential(*layers)
+    elif hasattr(m, 'model') and isinstance(m.model, nn.Sequential):
+        m.model = nn.Sequential(*layers)
+    else:
+        raise TypeError(f'Cannot set layers into {type(m)}')
 
 
 # ══════════════════════════════════════════════════════════════════════════════
