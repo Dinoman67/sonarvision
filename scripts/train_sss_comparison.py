@@ -115,8 +115,10 @@ def train_yolov8n(dataset_yaml, args, results_dir):
 def train_custom_model(model_key, build_fn, model_name, dataset_yaml, args, results_dir):
     """Train a custom SSS model using a monkey-patched trainer.
 
-    The trick: we patch DetectionTrainer.get_model() to return our custom
-    model directly, bypassing the YAML reconstruction that breaks custom architectures.
+    SS-YOLO (GhostConv/FastC2f) trains from scratch — its architecture is
+    incompatible with YOLOv8n pretrained weights.
+    YOLOv8-ESI (C2f + SE) preserves pretrained weights — SE layers are new
+    but lightweight and initialized well.
     """
     from ultralytics.models.yolo.detect.train import DetectionTrainer
     print(f"\n{'='*60}")
@@ -126,8 +128,11 @@ def train_custom_model(model_key, build_fn, model_name, dataset_yaml, args, resu
     model_dir = results_dir / model_key
     model_dir.mkdir(parents=True, exist_ok=True)
 
-    # Build custom model
-    custom_model = build_fn(pretrained='yolov8n.pt')
+    # Build custom model — SS-YOLO uses pretrained=None (from scratch)
+    if model_key == 'ss_yolo':
+        custom_model = build_fn(pretrained=None)  # From scratch!
+    else:
+        custom_model = build_fn(pretrained='yolov8n.pt')  # Transfer learn
     n_params = sum(p.numel() for p in custom_model.parameters())
     print(f"  Built {model_name}: {n_params:,} params ({n_params/1e6:.2f}M)")
 
@@ -149,8 +154,8 @@ def train_custom_model(model_key, build_fn, model_name, dataset_yaml, args, resu
         model.nc = custom_model.nc if hasattr(custom_model, 'nc') else self.data['nc']
         model.names = custom_model.names if hasattr(custom_model, 'names') else {0: 'marine_debris'}
         
-        # Load pretrained weights (matching layers only)
-        if weights:
+        # Only load pretrained weights for ESI (where transfer works)
+        if weights and model_key != 'ss_yolo':
             try:
                 model.load(weights)
             except Exception as e:
@@ -161,21 +166,33 @@ def train_custom_model(model_key, build_fn, model_name, dataset_yaml, args, resu
     DetectionTrainer.get_model = _patched_get_model
 
     try:
-        # Use YOLOv8n as the "template" model (for YAML/config purposes)
-        # but our custom model will be injected via the patched get_model
         yolo = YOLO('yolov8n.pt')
+
+        # SS-YOLO needs more aggressive training (from scratch)
+        if model_key == 'ss_yolo':
+            train_kwargs = dict(
+                lr0=0.01,       # Higher LR for from-scratch training
+                lrf=0.05,       # Higher final LR
+                warmup_epochs=5, # More warmup for from-scratch
+                epochs=args.epochs + 50,  # Extra epochs for from-scratch
+            )
+        else:
+            train_kwargs = dict(
+                lr0=0.005, lrf=0.01, warmup_epochs=3,
+                epochs=args.epochs,
+            )
 
         start = time.time()
         yolo.train(
             data=dataset_yaml,
-            epochs=args.epochs, imgsz=args.imgsz, batch=args.batch,
+            imgsz=args.imgsz, batch=args.batch,
             patience=args.patience,
-            lr0=0.005, lrf=0.01, warmup_epochs=3,
             mosaic=0.0, mixup=0.0,
             fliplr=0.0, flipud=0.0, degrees=0.0,
             translate=0.05, scale=0.2,
             name=model_key, project=str(results_dir),
             exist_ok=True, plots=True,
+            **train_kwargs,
         )
         training_time = time.time() - start
 
@@ -324,8 +341,8 @@ def _train_direct(model, model_name, dataset_yaml, args, model_dir):
     }
 
 
-def generate_report(results, results_dir):
-    """Generate comparison report."""
+def generate_report(results, results_dir, dataset_yaml=None, imgsz=512):
+    """Generate comparison report with confidence threshold sweep."""
     df = pd.DataFrame(results)
     df = df.sort_values('f1', ascending=False)
 
@@ -377,11 +394,13 @@ def generate_report(results, results_dir):
 def main():
     parser = argparse.ArgumentParser(description='SSS Model Comparison Training')
     parser.add_argument('--dataset', type=str, required=True)
-    parser.add_argument('--epochs', type=int, default=100)
+    parser.add_argument('--epochs', type=int, default=150)
     parser.add_argument('--imgsz', type=int, default=512)
     parser.add_argument('--batch', type=int, default=16)
-    parser.add_argument('--patience', type=int, default=30)
+    parser.add_argument('--patience', type=int, default=40)
     parser.add_argument('--output', type=str, default='results/sss_comparison')
+    parser.add_argument('--conf-eval', type=float, default=0.1,
+                       help='Confidence threshold for evaluation (lower = better recall)')
     parser.add_argument('--models', nargs='+',
                        default=['yolov8n', 'ss_yolo', 'yolov8_esi'],
                        choices=['yolov8n', 'ss_yolo', 'yolov8_esi'])
@@ -415,7 +434,8 @@ def main():
             all_results.append(result)
 
     if len(all_results) > 1:
-        generate_report(all_results, results_dir)
+        generate_report(all_results, results_dir,
+                        dataset_yaml=args.dataset, imgsz=args.imgsz)
 
     print("\n✓ All done!")
 

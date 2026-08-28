@@ -2,8 +2,10 @@
 Custom modules for SSS (Side-Scan Sonar) optimized YOLOv8 variants.
 
 Based on:
-- SS-YOLO: Fast-C2f + GhostConv for lightweight SSS detection
-- YOLOv8-ESI: SE attention for frequency-domain feature extraction
+- SS-YOLO (Yang et al., 2025, JMSE): Fast-C2f (PConv+PWConv) + GhostConv
+  - PConv from FasterNet (Chen et al., CVPR 2023): partial convolution
+  - Fast-C2f embeds FasterBlock into C2f structure
+- YOLOv8-ESI: SE attention for channel recalibration
 
 Author: Buffy (Codebuff)
 """
@@ -54,8 +56,77 @@ class WaveletConv(nn.Module):
         return self.act(self.bn(out))
 
 
+class PConv(nn.Module):
+    """Partial Convolution (PConv) from FasterNet (CVPR 2023).
+    
+    Only convolves 1/n_div of input channels, leaving the rest untouched.
+    This reduces FLOPs while maintaining feature diversity.
+    
+    Reference: Chen et al., "Run, Don't Walk: Chasing Higher FLOPS for
+    Faster Neural Networks", CVPR 2023.
+    """
+
+    def __init__(self, in_channels, kernel_size=3, n_div=4):
+        super().__init__()
+        assert in_channels > n_div, \
+            f'in_channels ({in_channels}) must be > n_div ({n_div})'
+        self.dim_conv = in_channels // n_div
+        self.dim_untouched = in_channels - self.dim_conv
+        self.conv = nn.Conv2d(
+            in_channels=self.dim_conv,
+            out_channels=self.dim_conv,
+            kernel_size=kernel_size,
+            stride=1,
+            padding=(kernel_size - 1) // 2,
+            bias=False
+        )
+
+    def forward(self, x):
+        # Split: convolve only dim_conv channels, leave rest untouched
+        x1, x2 = torch.split(x, [self.dim_conv, self.dim_untouched], dim=1)
+        x1 = self.conv(x1)
+        return torch.cat((x1, x2), dim=1)
+
+
+class FasterBlock(nn.Module):
+    """FasterBlock: PConv + PWConv + residual connection.
+    
+    This is the core building block of SS-YOLO's Fast-C2f.
+    Replaces standard Bottleneck in C2f with this lighter design.
+    
+    Architecture:
+        x → PConv(3x3) → LayerNorm → GELU → PWConv(1x1) → LayerNorm → + x
+    """
+
+    def __init__(self, in_channels, out_channels, shortcut=True, n_div=4, kernel_size=3):
+        super().__init__()
+        self.pconv = PConv(in_channels, kernel_size=kernel_size, n_div=n_div)
+        self.ln1 = nn.LayerNorm(in_channels)
+        self.pwconv1 = nn.Conv2d(in_channels, in_channels * 4, 1, 1, bias=False)
+        self.act = nn.GELU()
+        self.pwconv2 = nn.Conv2d(in_channels * 4, out_channels, 1, 1, bias=False)
+        self.ln2 = nn.LayerNorm(out_channels)
+        self.shortcut = shortcut and (in_channels == out_channels)
+
+    def forward(self, x):
+        residual = x
+        x = self.pconv(x)
+        x = self.ln1(x.permute(0, 2, 3, 1)).permute(0, 3, 1, 2)
+        x = self.pwconv1(x)
+        x = self.act(x)
+        x = self.pwconv2(x)
+        x = self.ln2(x.permute(0, 2, 3, 1)).permute(0, 3, 1, 2)
+        if self.shortcut:
+            x = x + residual
+        return x
+
+
 class DepthwiseSeparableConv(nn.Module):
-    """Depthwise separable convolution for parameter efficiency."""
+    """Depthwise separable convolution for parameter efficiency.
+    
+    Note: This is NOT used in SS-YOLO (which uses PConv+FasterBlock).
+    Kept for compatibility and experimentation.
+    """
 
     def __init__(self, in_channels, out_channels, shortcut=True):
         super().__init__()
@@ -74,7 +145,15 @@ class DepthwiseSeparableConv(nn.Module):
 
 
 class FastC2f(nn.Module):
-    """Fast C2f Module for SS-YOLO. Uses depthwise separable convolutions."""
+    """Fast-C2f Module for SS-YOLO (Yang et al., 2025).
+    
+    Replaces standard C2f's Bottleneck with FasterBlock (PConv+PWConv).
+    This embeds the FasterNet design pattern into YOLOv8's C2f structure,
+    achieving the lightweight property required for SSS deployment.
+    
+    Architecture (matching paper Figure 4d):
+        input → Conv1x1 → split → [x1, x2] + n x FasterBlock → concat → Conv1x1
+    """
 
     def __init__(self, in_channels, out_channels, n=1, shortcut=True, expansion=0.5):
         super().__init__()
@@ -83,8 +162,9 @@ class FastC2f(nn.Module):
         self.bn1 = nn.BatchNorm2d(hidden_channels)
         self.cv2 = nn.Conv2d((n + 2) * hidden_channels // 2, out_channels, 1, 1, bias=False)
         self.bn2 = nn.BatchNorm2d(out_channels)
-        self.bottlenecks = nn.ModuleList([
-            DepthwiseSeparableConv(hidden_channels // 2, hidden_channels // 2, shortcut)
+        # SS-YOLO: FasterBlock (PConv + PWConv) replaces standard Bottleneck
+        self.faster_blocks = nn.ModuleList([
+            FasterBlock(hidden_channels // 2, hidden_channels // 2, shortcut=shortcut)
             for _ in range(n)
         ])
         self.act = nn.SiLU(inplace=True)
@@ -93,8 +173,8 @@ class FastC2f(nn.Module):
         x = self.act(self.bn1(self.cv1(x)))
         x1, x2 = x.chunk(2, dim=1)
         y = [x1, x2]
-        for bottleneck in self.bottlenecks:
-            y.append(bottleneck(y[-1]))
+        for block in self.faster_blocks:
+            y.append(block(y[-1]))
         return self.act(self.bn2(self.cv2(torch.cat(y, dim=1))))
 
 
