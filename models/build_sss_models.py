@@ -59,6 +59,35 @@ def _count_params(model):
     return sum(p.numel() for p in model.parameters()) / 1e6
 
 
+def _get_layers(model):
+    """Extract nn.Sequential layers from a YOLO model.
+    
+    Handles both old (model.model is Sequential) and new
+    (model.model is DetectionModel, model.model.model is Sequential) ultralytics.
+    """
+    m = model.model
+    if hasattr(m, 'model') and hasattr(m.model, '__iter__'):
+        # New ultralytics: model.model is DetectionModel
+        return list(m.model)
+    elif hasattr(m, '__iter__'):
+        # Old ultralytics: model.model is Sequential
+        return list(m)
+    else:
+        raise TypeError(f'Cannot extract layers from {type(m)}')
+
+
+def _set_layers(model, layers):
+    """Set nn.Sequential layers back into a YOLO model."""
+    m = model.model
+    if hasattr(m, 'model') and not hasattr(m.model, '__iter__'):
+        # New ultralytics: set into DetectionModel.model
+        m.model = nn.Sequential(*layers)
+    else:
+        # Old ultralytics: set directly
+        m = nn.Sequential(*layers)
+        model.model = m
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # Model A: YOLOv8n Baseline
 # ══════════════════════════════════════════════════════════════════════════════
@@ -97,7 +126,7 @@ def build_model_b(pretrained='yolov8s.pt'):
 
 def _apply_ss_yolo_full(model):
     """Replace all Conv→GhostConv, C2f→FastC2f (full replacement)."""
-    layers = list(model.model)
+    layers = _get_layers(model)
 
     for i, layer in enumerate(layers):
         orig_f = getattr(layer, 'f', -1)
@@ -119,7 +148,7 @@ def _apply_ss_yolo_full(model):
             new_layer.i, new_layer.f, new_layer.type = i, orig_f, 'FastC2f'
             layers[i] = new_layer
 
-    model.model = nn.Sequential(*layers)
+    _set_layers(model, layers)
     return model
 
 
@@ -145,7 +174,7 @@ def build_model_c():
 
 def _apply_ss_yolo_neck_only(model):
     """Replace only neck Conv→GhostConv, C2f→FastC2f (keep pretrained backbone)."""
-    layers = list(model.model)
+    layers = _get_layers(model)
     backbone_end = 9  # Last backbone layer index in YOLOv8n
 
     for i, layer in enumerate(layers):
@@ -171,7 +200,7 @@ def _apply_ss_yolo_neck_only(model):
             new_layer.i, new_layer.f, new_layer.type = i, orig_f, 'FastC2f'
             layers[i] = new_layer
 
-    model.model = nn.Sequential(*layers)
+    _set_layers(model, layers)
     return model
 
 
@@ -205,7 +234,7 @@ def build_model_e():
     model = _apply_ss_yolo_full(base)
 
     # Add WaveletConv after first backbone layer
-    layers = list(model.model)
+    layers = _get_layers(model)
     if isinstance(layers[0], GhostConv):
         wavelet = WaveletConv(3, 16)
         layers.insert(1, wavelet)
@@ -214,7 +243,7 @@ def build_model_e():
             layer.i = i
             if hasattr(layer, 'f') and layer.f > 0:
                 layer.f += 1
-    model.model = nn.Sequential(*layers)
+    _set_layers(model, layers)
 
     print(f"Model E (SS-YOLO+EIS scratch): {_count_params(model):.2f}M params")
     return model
@@ -238,7 +267,7 @@ def build_model_f(pretrained='yolov8n.pt'):
     model = _apply_ss_yolo_neck_only(base)
 
     # Add EIS modules after neck layers
-    layers = list(model.model)
+    layers = _get_layers(model)
     insertions = []
     for i, layer in enumerate(layers):
         if hasattr(layer, 'type') and layer.type in ('FastC2f', 'C2f'):
@@ -254,7 +283,7 @@ def build_model_f(pretrained='yolov8n.pt'):
     for idx, module in reversed(insertions):
         layers.insert(idx, module)
 
-    model.model = nn.Sequential(*layers)
+    _set_layers(model, layers)
     print(f"Model F (SS-YOLO pretrained+EIS): {_count_params(model):.2f}M params")
     return model
 
@@ -314,13 +343,13 @@ class C2fWithSE(nn.Module):
 
 def _add_se_blocks(model, reduction=16):
     """Add SE attention blocks after each C2f in the model."""
-    layers = list(model.model)
+    layers = _get_layers(model)
     for i, layer in enumerate(layers):
         if isinstance(layer, C2f):
             c2 = layer.cv2.conv.out_channels
             layers[i] = C2fWithSE(layer, reduction=reduction)
             print(f"  Wrapped layer {i}: C2f({c2}) → C2fWithSE")
-    model.model = nn.Sequential(*layers)
+    _set_layers(model, layers)
     total = sum(p.numel() for p in model.parameters())
     print(f"\nYOLOv8-ESI (SE-augmented) built:")
     print(f"  Parameters: {total:,} ({total/1e6:.2f}M)")
