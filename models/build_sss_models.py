@@ -66,26 +66,43 @@ def _get_layers(model):
     (model.model is DetectionModel, model.model.model is Sequential) ultralytics.
     """
     m = model.model
-    if hasattr(m, 'model') and hasattr(m.model, '__iter__'):
-        # New ultralytics: model.model is DetectionModel
-        return list(m.model)
-    elif hasattr(m, '__iter__'):
-        # Old ultralytics: model.model is Sequential
+    # Try standard ultralytics structure: model.model.model = Sequential
+    if hasattr(m, 'model'):
+        inner = m.model
+        if hasattr(inner, '__iter__') and not isinstance(inner, nn.Module):
+            # It's a list-like, not a Module
+            return list(inner)
+        elif hasattr(inner, 'model'):
+            # Triple nested: model.model.model.model
+            return list(inner.model)
+        elif isinstance(inner, nn.Sequential):
+            return list(inner)
+    # Fallback: model.model itself is iterable
+    if hasattr(m, '__iter__') and not isinstance(m, nn.Module):
         return list(m)
-    else:
-        raise TypeError(f'Cannot extract layers from {type(m)}')
+    elif isinstance(m, nn.Sequential):
+        return list(m)
+    
+    # Last resort: check all attributes
+    for attr_name in ['model', '_modules']:
+        if hasattr(m, attr_name):
+            obj = getattr(m, attr_name)
+            if isinstance(obj, nn.Sequential):
+                return list(obj)
+    
+    raise TypeError(f'Cannot extract layers from {type(m)}. Available: {[a for a in dir(m) if not a.startswith("_")][:20]}')
 
 
 def _set_layers(model, layers):
     """Set nn.Sequential layers back into a YOLO model."""
     m = model.model
-    if hasattr(m, 'model') and not hasattr(m.model, '__iter__'):
-        # New ultralytics: set into DetectionModel.model
-        m.model = nn.Sequential(*layers)
-    else:
-        # Old ultralytics: set directly
-        m = nn.Sequential(*layers)
-        model.model = m
+    if hasattr(m, 'model'):
+        inner = m.model
+        if isinstance(inner, nn.Sequential):
+            m.model = nn.Sequential(*layers)
+            return
+    # Fallback
+    model.model = nn.Sequential(*layers)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
