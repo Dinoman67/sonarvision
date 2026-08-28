@@ -136,7 +136,7 @@ def balance_dataset(e5_path, output_path, target_ratio=3, seed=42):
                 # Generate augmented copies
                 orig = Image.open(img_dir / img_name)
                 for j in range(target_ratio):
-                    aug_img = augment_debris_image(orig, seed=hash(img_name) + j)
+                    aug_img = augment_debris_image(orig, seed=abs(hash(img_name)) + j)
                     aug_name = f"{stem}_A{j+1:02d}.png"
                     aug_img.save(output_path / 'images' / split / aug_name)
                     
