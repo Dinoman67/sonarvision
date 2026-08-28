@@ -1,0 +1,49 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (large files — upload to Colab, not git)
+datasets/noaa-debris/e4/
+datasets/noaa-debris/e5/
+datasets/noaa-debris/*.zip
+datasets/ghostvision_sss_yolo/
+datasets/milco-nombo/
+
+# Model weights (download, don't store)
+*.pt
+*.onnx
+*.pth
+!models/*.py
+
+# Training outputs
+results/
+runs/
+experiments/
+
+# Logs
+*.log
+wandb/
+mlruns/
+
+# Temp
+*.tmp
+*.bak
