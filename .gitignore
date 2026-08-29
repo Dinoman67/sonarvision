@@ -22,8 +22,25 @@ env/
 Thumbs.db
 
 # Data (large files — upload to Colab, not git)
+datasets/noaa-debris/e3/
+datasets/noaa-debris/e3_enhanced/
+datasets/noaa-debris/e3_fixed/
+datasets/noaa-debris/e3_v2/
 datasets/noaa-debris/e4/
 datasets/noaa-debris/e5/
+datasets/noaa-debris/e4.tar.gz*
+datasets/noaa-debris/f6/
+datasets/noaa-debris/f6g7/
+datasets/noaa-debris/g7/
+datasets/noaa-debris/h8/
+datasets/noaa-debris/h8_test/
+datasets/noaa-debris/h8_unseen_test/
+datasets/noaa-debris/metadata/
+datasets/noaa-debris/qa/
+datasets/noaa-debris/raw/
+datasets/noaa-debris/tgt015_qa/
+datasets/noaa-debris/tgt015_test/
+datasets/noaa-debris/yolo/
 datasets/noaa-debris/*.zip
 datasets/ghostvision_sss_yolo/
 datasets/milco-nombo/
@@ -47,3 +64,11 @@ mlruns/
 # Temp
 *.tmp
 *.bak
+
+# Zip files (use Colab, not git)
+*.zip
+*.tar.gz
+*.tar.gz.part_*
+
+# Local notebooks (keep only Colab ones)
+Downloads/*.ipynb
