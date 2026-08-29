@@ -21,6 +21,16 @@ env/
 .DS_Store
 Thumbs.db
 
+# Node / Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# App runtime storage
+backend/storage/uploads/
+backend/storage/results/
+
 # Data (large files — upload to Colab, not git)
 datasets/noaa-debris/e3/
 datasets/noaa-debris/e3_enhanced/
