@@ -72,6 +72,18 @@ Realistic SSS-specific noise added to training backgrounds:
 
 ## Quick Start
 
+### Web Application (Single Command)
+
+```bash
+# Production mode: builds UI (if needed) & serves full app on http://localhost:8000
+make run
+# or: ./start.sh
+
+# Development mode (FastAPI + Vite dev server with hot reload):
+make dev
+# or: ./start.sh --dev
+```
+
 ### Google Colab (Recommended)
 
 1. Upload `h8.zip` to Colab
@@ -79,6 +91,7 @@ Realistic SSS-specific noise added to training backgrounds:
 3. Run all cells — trains 3 models, compares on unseen data, exports best to ONNX
 
 ### Local Training
+
 
 ```bash
 pip install -r requirements.txt
