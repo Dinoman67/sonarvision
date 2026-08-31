@@ -913,7 +913,8 @@ def draw_qa_image(img: Image.Image, yolo_labels: list, crop_id: str, qa_dir: Pat
 
 def main():
     parser = argparse.ArgumentParser(description="Prepare NOAA SSS E3 YOLO Dataset")
-    parser.add_argument("--base-dir", type=str, default="/home/ashish/sonar-vision", help="Workspace base directory")
+    default_base = str(Path(__file__).resolve().parent.parent)
+    parser.add_argument("--base-dir", type=str, default=default_base, help="Workspace base directory")
     parser.add_argument("--pilot", action="store_true", default=True, help="Generate pilot dataset")
     parser.add_argument("--full", action="store_true", help="Generate full E3 dataset")
     args = parser.parse_args()

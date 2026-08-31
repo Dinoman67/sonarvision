@@ -28,12 +28,13 @@ def main():
     if args.model_path:
         os.environ["MODEL_PATH"] = args.model_path
 
+    default_model = str(PROJECT_ROOT / "models" / "yolo_esi_fp16.onnx")
     print("\n" + "=" * 70)
-    print("🌊 YOLO-ESI DEBRIS ANALYSIS WEB APPLICATION")
-    print("   Environmental Remote Sensing & Side-Scan Sonar Analysis")
+    print("  YOLO-ESI DEBRIS ANALYSIS WEB APPLICATION")
+    print("  Environmental Remote Sensing & Side-Scan Sonar Analysis")
     print("=" * 70)
     print(f"  Host       : http://{args.host}:{args.port}")
-    print(f"  Model Path : {os.getenv('MODEL_PATH', '/home/ashish/Downloads/yolo_esi_fp16.onnx')}")
+    print(f"  Model Path : {os.getenv('MODEL_PATH', default_model)}")
     print(f"  Frontend   : Integrated React + TypeScript + Tailwind UI")
     print("=" * 70 + "\n")
 

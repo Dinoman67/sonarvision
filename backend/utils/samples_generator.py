@@ -6,16 +6,18 @@ import rasterio
 from rasterio.windows import Window
 from PIL import Image
 
+from backend.config import SAMPLES_DIR, PROJECT_ROOT
+
 def ensure_sample_assets():
     """
     Ensures preloaded sample assets are present in backend/static/samples/
     """
-    samples_dir = Path("/home/ashish/sonar-vision/backend/static/samples")
+    samples_dir = SAMPLES_DIR
     samples_dir.mkdir(parents=True, exist_ok=True)
 
     # 1. Real Georeferenced GeoTIFF crop from NOAA survey
     geotiff_out = samples_dir / "sample_noaa_geotiff_debris.tif"
-    raw_tif = "/home/ashish/sonar-vision/datasets/noaa-debris/raw/H11833/H11833_1of2.tif"
+    raw_tif = str(PROJECT_ROOT / "datasets/noaa-debris/raw/H11833/H11833_1of2.tif")
     if not geotiff_out.exists() and os.path.exists(raw_tif):
         try:
             with rasterio.open(raw_tif) as src:
@@ -40,13 +42,13 @@ def ensure_sample_assets():
 
     # 2. Real NOAA SSS Debris PNG
     sample_debris_png = samples_dir / "sample_sss_marine_debris.png"
-    src_png_debris = "/home/ashish/sonar-vision/datasets/noaa-debris/e3_enhanced/images/train/E3_H11833_TGT014_0011.png"
+    src_png_debris = str(PROJECT_ROOT / "datasets/noaa-debris/e3_enhanced/images/train/E3_H11833_TGT014_0011.png")
     if not sample_debris_png.exists() and os.path.exists(src_png_debris):
         shutil.copy2(src_png_debris, sample_debris_png)
 
     # 3. Real NOAA Seabed Background PNG (No Debris)
     sample_bg_png = samples_dir / "sample_seabed_background.png"
-    src_png_bg = "/home/ashish/sonar-vision/datasets/noaa-debris/e3_enhanced/images/train/E3_H11833_BG_0017.png"
+    src_png_bg = str(PROJECT_ROOT / "datasets/noaa-debris/e3_enhanced/images/train/E3_H11833_BG_0017.png")
     if not sample_bg_png.exists() and os.path.exists(src_png_bg):
         shutil.copy2(src_png_bg, sample_bg_png)
 

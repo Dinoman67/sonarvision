@@ -37,9 +37,12 @@ CLASS_NAMES = {
 
 
 def convert_and_extract(
-    zip_path: str = "/home/ashish/Downloads/GhostVision_DatasetAndModels.zip",
-    output_base: str = "/home/ashish/sonar-vision/datasets/ghostvision_sss_yolo",
+    zip_path: str = "GhostVision_DatasetAndModels.zip",
+    output_base: str = None,
 ):
+    project_root = Path(__file__).resolve().parent.parent
+    if output_base is None:
+        output_base = str(project_root / "datasets" / "ghostvision_sss_yolo")
     zip_path = Path(zip_path)
     output_dir = Path(output_base)
 

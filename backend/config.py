@@ -12,7 +12,7 @@ UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 SAMPLES_DIR.mkdir(parents=True, exist_ok=True)
 
-DEFAULT_MODEL_PATH = "/home/ashish/Downloads/yolo_esi_fp16.onnx"
+DEFAULT_MODEL_PATH = str(PROJECT_ROOT / "models" / "yolo_esi_fp16.onnx")
 MODEL_PATH = os.getenv("MODEL_PATH", DEFAULT_MODEL_PATH)
 
 DEFAULT_CONFIDENCE_THRESHOLD = float(os.getenv("CONFIDENCE_THRESHOLD", "0.25"))
