@@ -187,7 +187,7 @@ reportlab>=4.0.0
 
 ## License
 
-MIT
+Apache-2.0
 
 ## Acknowledgments
 
