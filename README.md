@@ -1,10 +1,10 @@
-# 🌊 SonarVision — SSS Marine Debris Detection
+# SonarVision — SSS Marine Debris Detection
 
 **Smart India Hackathon 2026 | Side-Scan Sonar Object Detection**
 
 Deep learning system for detecting underwater marine debris in side-scan sonar (SSS) imagery, deployed on edge devices (Raspberry Pi) for real-time ocean surveying.
 
-## 🎯 Problem Statement
+## Problem Statement
 
 Marine debris detection in side-scan sonar imagery is fundamentally different from RGB object detection:
 
@@ -16,7 +16,7 @@ Marine debris detection in side-scan sonar imagery is fundamentally different fr
 
 Standard YOLO models treat sonar like RGB images and learn visual patterns (bright spots) rather than spatial patterns (shadow geometry + intensity gradients). Our solution addresses this with spatial-aware attention.
 
-## 🧠 Solution: YOLOv8-ESI (Spatial-Aware Detection)
+## Solution: YOLOv8-ESI (Spatial-Aware Detection)
 
 We built **YOLOv8-ESI** — a YOLOv8-nano variant with **Squeeze-and-Excitation (SE) attention** in the C2f backbone, specifically designed for sonar data:
 
@@ -28,13 +28,13 @@ We built **YOLOv8-ESI** — a YOLOv8-nano variant with **Squeeze-and-Excitation 
 
 | Model | Params | mAP50 | F1 | Size | Edge-Ready |
 |-------|--------|-------|-----|------|------------|
-| **YOLOv8n** (baseline) | 3.01M | 0.787 | 0.767 | 12 MB | ✅ |
-| **SS-YOLO** | 1.66M | 0.689 | 0.617 | 7 MB | ⚠️ |
-| **YOLOv8-ESI** (ours) | 3.3M | **0.884** | **0.808** | 6 MB | ✅ |
+| **YOLOv8n** (baseline) | 3.01M | 0.787 | 0.767 | 12 MB | Yes |
+| **SS-YOLO** | 1.66M | 0.689 | 0.617 | 7 MB | Limited |
+| **YOLOv8-ESI** (ours) | 3.3M | **0.884** | **0.808** | 6 MB | Yes |
 
 > YOLOv8-ESI achieves **+12.3% mAP50** over baseline YOLOv8n with only 10% more parameters.
 
-## 📊 Results (Unseen Test Set — 834 images)
+## Results (Unseen Test Set — 834 images)
 
 | Metric | Value |
 |--------|-------|
@@ -53,7 +53,7 @@ We built **YOLOv8-ESI** — a YOLOv8-nano variant with **Squeeze-and-Excitation 
 | **ONNX FP16** | **6.16 MB** | **0.884** | **0.808** | **Deployment (recommended)** |
 | ONNX INT8 | 3.32 MB | 0.865 | 0.783 | Smallest footprint |
 
-## 🗂️ Dataset
+## Dataset
 
 ### Training Data (H8 Dataset)
 - **Source**: NOAA H11833 side-scan sonar survey
@@ -70,7 +70,19 @@ Realistic SSS-specific noise added to training backgrounds:
 - Brightness/contrast variation (gain drift)
 - Sand ripples and rock fields (seabed textures)
 
-## 🚀 Quick Start
+## Quick Start
+
+### Web Application (Single Command)
+
+```bash
+# Production mode: builds UI (if needed) & serves full app on http://localhost:8000
+make run
+# or: ./start.sh
+
+# Development mode (FastAPI + Vite dev server with hot reload):
+make dev
+# or: ./start.sh --dev
+```
 
 ### Google Colab (Recommended)
 
@@ -80,8 +92,9 @@ Realistic SSS-specific noise added to training backgrounds:
 
 ### Local Training
 
+
 ```bash
-pip install ultralytics pandas matplotlib
+pip install -r requirements.txt
 
 # Train all models
 python scripts/train_sss_models.py --dataset datasets/noaa-debris/h8/data.yaml --epochs 100
@@ -99,7 +112,7 @@ pip install onnxruntime opencv-python
 python scripts/rpi_detect.py --model yolo_esi_fp16.onnx --source camera
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 sonar-vision/
@@ -122,11 +135,12 @@ sonar-vision/
 │       ├── e4/                          # NOAA E4 debris crops
 │       ├── g7/                          # G7 background crops
 │       └── h8_unseen_test/             # Unseen test set (834 images)
+├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
 
-## 🔬 Methodology
+## Methodology
 
 ### Two-Stage Training Pipeline
 
@@ -146,20 +160,28 @@ YOLOv8-ESI learns: `"shadow pattern + intensity gradient = debris"`
 
 The SE attention module recalibrates channel-wise features based on global spatial context — critical for sonar where debris is identified by its acoustic shadow, not its brightness.
 
-## 🛠️ Requirements
+## Requirements
 
 ```
 ultralytics>=8.4.0
 torch>=2.0.0
-opencv-python
-numpy
-pillow
-matplotlib
-pandas
-onnxruntime
+opencv-python>=4.8.0
+numpy>=1.24.0
+pillow>=10.0.0
+matplotlib>=3.7.0
+pandas>=2.0.0
+onnxruntime>=1.15.0
+fastapi>=0.100.0
+uvicorn[standard]>=0.22.0
+python-multipart>=0.0.6
+pydantic>=2.0.0
+pyyaml>=6.0
+rasterio>=1.3.0
+pyproj>=3.5.0
+reportlab>=4.0.0
 ```
 
-## 📦 Deployment Options
+## Deployment Options
 
 | Platform | Format | Speed | Notes |
 |----------|--------|-------|-------|
@@ -168,7 +190,7 @@ onnxruntime
 | Raspberry Pi 4/5 | ONNX Runtime | ~20-30 FPS | Smooth realtime |
 | Google Colab | PyTorch | ~100 FPS | Training only |
 
-## 🏆 Key Achievements
+## Key Achievements
 
 1. **+12.3% mAP50** improvement over baseline YOLOv8n
 2. **6.2 MB model** — deployable on any edge device
@@ -176,11 +198,11 @@ onnxruntime
 4. **Two-stage training** — systematic model selection with unseen test validation
 5. **Production export pipeline** — FP16/INT8 quantization with accuracy validation
 
-## 📝 License
+## License
 
-MIT
+Apache-2.0
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **NOAA** for the H11833 side-scan sonar dataset
 - **Ultralytics** for YOLOv8

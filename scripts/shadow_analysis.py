@@ -723,7 +723,8 @@ def print_summary(target_results, bg_results):
 
 def main():
     parser = argparse.ArgumentParser(description="SSS Shadow Analysis for Marine Debris Detection")
-    parser.add_argument("--base-dir", type=str, default="/home/ashish/sonar-vision")
+    default_base = str(Path(__file__).resolve().parent.parent)
+    parser.add_argument("--base-dir", type=str, default=default_base)
     args = parser.parse_args()
 
     base_dir = args.base_dir

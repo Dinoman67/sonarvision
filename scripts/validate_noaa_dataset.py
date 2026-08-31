@@ -20,7 +20,9 @@ import csv
 import yaml
 from pathlib import Path
 
-def validate_dataset(base_dir: str = "/home/ashish/sonar-vision") -> bool:
+def validate_dataset(base_dir: str = None) -> bool:
+    if base_dir is None:
+        base_dir = str(Path(__file__).resolve().parent.parent)
     yolo_dir = Path(base_dir) / "datasets" / "noaa-debris" / "yolo"
     meta_dir = Path(base_dir) / "datasets" / "noaa-debris" / "metadata"
     data_yaml_path = yolo_dir / "data.yaml"
