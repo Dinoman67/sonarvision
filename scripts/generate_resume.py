@@ -175,6 +175,6 @@ pdf.entry_header(
     "05/2024  |  Thiruthangal Nadar Vidhyalaya - Chennai, India",
 )
 
-output_path = "/home/ashish/Downloads/Resume_Updated.pdf"
+output_path = "Resume_Updated.pdf"
 pdf.output(output_path)
 print(f"Resume saved to {output_path}")

@@ -54,8 +54,11 @@ def get_sequence_id(filename: str) -> str:
 
 
 def validate_ghostvision_yolo(
-    dataset_dir: str = "/home/ashish/sonar-vision/datasets/ghostvision_sss_yolo",
+    dataset_dir: str = None,
 ) -> bool:
+    project_root = Path(__file__).resolve().parent.parent
+    if dataset_dir is None:
+        dataset_dir = str(project_root / "datasets" / "ghostvision_sss_yolo")
     ds_path = Path(dataset_dir)
     errors = []
     passed = True

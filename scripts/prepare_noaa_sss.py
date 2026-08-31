@@ -724,7 +724,8 @@ names:
 
 def main():
     parser = argparse.ArgumentParser(description="Prepare NOAA SSS YOLO Object Detection Dataset")
-    parser.add_argument("--base-dir", type=str, default="/home/ashish/sonar-vision", help="Workspace base directory")
+    default_base = str(Path(__file__).resolve().parent.parent)
+    parser.add_argument("--base-dir", type=str, default=default_base, help="Workspace base directory")
     parser.add_argument("--patch-size", type=int, default=DEFAULT_PATCH_SIZE, help="Patch size in pixels")
     parser.add_argument("--overlap", type=int, default=DEFAULT_OVERLAP, help="Overlap in pixels")
     args = parser.parse_args()

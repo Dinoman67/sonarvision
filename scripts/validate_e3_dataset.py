@@ -23,7 +23,9 @@ from pathlib import Path
 import numpy as np
 
 
-def validate_e3(base_dir: str = "/home/ashish/sonar-vision") -> bool:
+def validate_e3(base_dir: str = None) -> bool:
+    if base_dir is None:
+        base_dir = str(Path(__file__).resolve().parent.parent)
     base_path = Path(base_dir)
     e3_dir = base_path / "datasets" / "noaa-debris" / "e3"
     meta_dir = e3_dir / "metadata"

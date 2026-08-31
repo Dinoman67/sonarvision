@@ -62,7 +62,6 @@ def _load_noaa_patch_manifest() -> Dict[str, Dict[str, Any]]:
 
     manifest_map: Dict[str, Dict[str, Any]] = {}
     base_dirs = [
-        Path("/home/ashish/sonar-vision/datasets/noaa-debris"),
         Path(__file__).resolve().parent.parent.parent / "datasets" / "noaa-debris",
         Path("datasets/noaa-debris"),
     ]
