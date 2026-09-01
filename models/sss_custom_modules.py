@@ -10,8 +10,6 @@ Based on verified research:
   - FasterBlock: PConv + PWConv + LayerNorm + GELU + residual
 - YOLOv8-ESI:
   - SE attention for channel recalibration after each C2f
-
-Author: Buffy (Codebuff)
 """
 
 import math

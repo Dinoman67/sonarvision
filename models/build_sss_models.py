@@ -18,8 +18,6 @@ SS-YOLO Architecture (Yang et al., 2025, JMSE 13(1):66):
 YOLOv8-ESI:
   - Standard YOLOv8n + SE attention after each C2f
   - Pretrained weights transfer fine (SE blocks are added, not replaced)
-
-Author: Buffy (Codebuff)
 """
 
 import torch
