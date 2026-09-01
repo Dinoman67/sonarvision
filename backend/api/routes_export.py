@@ -41,3 +41,11 @@ async def get_original_image(analysis_id: str):
 @router.get("/{analysis_id}/mask")
 async def get_detection_mask(analysis_id: str):
     return get_result_file(analysis_id, "mask.png", "image/png")
+
+@router.get("/{analysis_id}/colormap")
+async def get_colormap_image(analysis_id: str):
+    return get_result_file(analysis_id, "colormap.png", "image/png")
+
+@router.get("/{analysis_id}/evidence")
+async def get_evidence_image(analysis_id: str):
+    return get_result_file(analysis_id, "evidence.png", "image/png")

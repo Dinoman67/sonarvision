@@ -98,6 +98,8 @@ export interface AnalysisResponse {
   original_image_url: string;
   annotated_image_url: string;
   detection_mask_url: string;
+  colormap_image_url: string;
+  evidence_image_url: string;
   csv_export_url: string;
   json_export_url: string;
   pdf_report_url: string;

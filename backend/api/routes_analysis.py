@@ -22,7 +22,7 @@ from backend.config import (
 from backend.inference.engine import YOLOESIInferenceEngine
 from backend.geospatial.metadata import extract_geospatial_metadata
 from backend.geospatial.coordinates import pixel_to_geographic
-from backend.utils.annotator import draw_annotations, generate_detection_only_view
+from backend.utils.annotator import draw_annotations, generate_detection_only_view, apply_pseudo_colormap, generate_evidence_panel
 from backend.utils.file_validator import validate_and_save_upload
 from backend.reports.pdf_report import create_pdf_report
 from backend.reports.csv_report import generate_csv_report
@@ -162,10 +162,18 @@ def run_full_pipeline(
     annotated_bgr = draw_annotations(img_bgr, detections_raw)
     mask_bgr = generate_detection_only_view(img_bgr, detections_raw)
 
+    # New: Pseudo-color colormap — highlights debris regions in vibrant color
+    colormap_bgr = apply_pseudo_colormap(img_bgr, detections_raw)
+
+    # New: Evidence panel — proves model distinguishes debris from mere brightness
+    evidence_bgr = generate_evidence_panel(img_bgr, detections_raw)
+
     # Save artifacts
     orig_save_path = analysis_dir / "original.png"
     annotated_save_path = analysis_dir / "annotated.png"
     mask_save_path = analysis_dir / "mask.png"
+    colormap_save_path = analysis_dir / "colormap.png"
+    evidence_save_path = analysis_dir / "evidence.png"
     pdf_save_path = analysis_dir / "report.pdf"
     csv_save_path = analysis_dir / "detections.csv"
     json_save_path = analysis_dir / "results.json"
@@ -173,6 +181,8 @@ def run_full_pipeline(
     cv2.imwrite(str(orig_save_path), img_bgr)
     cv2.imwrite(str(annotated_save_path), annotated_bgr)
     cv2.imwrite(str(mask_save_path), mask_bgr)
+    cv2.imwrite(str(colormap_save_path), colormap_bgr)
+    cv2.imwrite(str(evidence_save_path), evidence_bgr)
 
     # 6. Build Summary Metrics
     total_dets = len(detections_list)
@@ -258,6 +268,8 @@ def run_full_pipeline(
         original_image_url=f"/api/export/{analysis_id}/original",
         annotated_image_url=f"/api/export/{analysis_id}/annotated",
         detection_mask_url=f"/api/export/{analysis_id}/mask",
+        colormap_image_url=f"/api/export/{analysis_id}/colormap",
+        evidence_image_url=f"/api/export/{analysis_id}/evidence",
         csv_export_url=f"/api/export/{analysis_id}/csv",
         json_export_url=f"/api/export/{analysis_id}/json",
         pdf_report_url=f"/api/export/{analysis_id}/pdf"

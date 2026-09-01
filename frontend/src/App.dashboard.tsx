@@ -1,5 +1,5 @@
-import { LandingPage } from './components/LandingPage';
 import { useState, useEffect } from 'react';
+import { Header } from './components/Header';
 import { UploadPanel } from './components/UploadPanel';
 import { ControlBar } from './components/ControlBar';
 import { ImageViewer } from './components/ImageViewer';
@@ -19,7 +19,6 @@ import type { AnalysisResponse, ModelMetadata, SampleItem } from './types';
 import { AlertTriangle, X } from 'lucide-react';
 
 export function App() {
-  const [showLanding, setShowLanding] = useState(true);
   const [modelInfo, setModelInfo] = useState<ModelMetadata | null>(null);
   const [samples, setSamples] = useState<SampleItem[]>([]);
   const [analysis, setAnalysis] = useState<AnalysisResponse | null>(null);
@@ -27,7 +26,7 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
 
   // Active inputs
-  const [selectedSampleId, setSelectedSampleId] = useState<string | null>(null);
+  const [selectedSampleId, setSelectedSampleId] = useState<string | null>('geotiff_debris');
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   // Tuning Parameters
@@ -91,6 +90,11 @@ export function App() {
         ]);
         setModelInfo(mInfo);
         setSamples(sampleList);
+
+        // Auto-run initial sample for immediate rich demo experience
+        if (sampleList.length > 0) {
+          handleSampleSelect('geotiff_debris');
+        }
       } catch (err: any) {
         console.error('Failed initialization:', err);
         setError('Could not connect to backend YOLO-ESI inference service.');
@@ -99,12 +103,11 @@ export function App() {
     init();
   }, []);
 
-  if (showLanding) {
-    return <LandingPage onLaunch={() => setShowLanding(false)} />;
-  }
-
   return (
     <div className="min-h-screen bg-[#070b14] text-slate-200 flex flex-col selection:bg-cyan-500 selection:text-black">
+      {/* HUD Navigation Header */}
+      <Header modelInfo={modelInfo} isAnalyzing={isAnalyzing} />
+
       {/* Error Alert Bar */}
       {error && (
         <div className="max-w-[1800px] w-full mx-auto px-6 pt-3">

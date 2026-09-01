@@ -84,6 +84,8 @@ class AnalysisResponse(BaseModel):
     original_image_url: str
     annotated_image_url: str
     detection_mask_url: str
+    colormap_image_url: str
+    evidence_image_url: str
     csv_export_url: str
     json_export_url: str
     pdf_report_url: str

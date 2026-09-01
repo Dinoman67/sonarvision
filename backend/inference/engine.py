@@ -42,6 +42,9 @@ class YOLOESIInferenceEngine:
         if not os.path.exists(self.model_path):
             raise FileNotFoundError(f"YOLO-ESI ONNX model not found at: {self.model_path}")
 
+        # Last raw output tensor for heatmap generation (set by predict())
+        self._last_raw_output: Optional[np.ndarray] = None
+
         # Compute SHA256 checksum (Model is IMMUTABLE)
         self.sha256_hash = compute_sha256(self.model_path)
         
@@ -109,6 +112,9 @@ class YOLOESIInferenceEngine:
 
         # Run ONNX inference
         raw_output = self.session.run([self.output_name], {self.input_name: tensor})[0]
+
+        # Store raw output for heatmap generation
+        self._last_raw_output = raw_output
 
         # Decode detections
         boxes_xyxy, scores, class_ids = decode_detections(raw_output, conf_threshold, self.classes)
