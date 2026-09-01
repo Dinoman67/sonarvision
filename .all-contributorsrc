@@ -1,0 +1,35 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "Dinoman67",
+      "name": "Dinoman67",
+      "avatar_url": "https://avatars.githubusercontent.com/u/182349637?v=4",
+      "profile": "https://github.com/Dinoman67",
+      "contributions": [
+        "code",
+        "doc",
+        "ideas"
+      ]
+    },
+    {
+      "login": "sanjeevark",
+      "name": "Sanjeevark",
+      "avatar_url": "https://avatars.githubusercontent.com/u/...",
+      "profile": "https://github.com/sanjeevark",
+      "contributions": [
+        "code"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "projectName": "sonarvision",
+  "projectOwner": "Dinoman67",
+  "repoHost": "https://github.com",
+  "repoType": "github"
+}
