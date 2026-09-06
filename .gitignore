@@ -40,6 +40,8 @@ datasets/
 *.pth
 !models/*.py
 hf_yolo_esi_model/
+hf_export_v6/
+
 
 # Training outputs
 results/
