@@ -47,7 +47,8 @@ runs/
 experiments/
 mock_runs/
 reports/visual_qa/
-SIH_demo/precomputed_reports/
+SIH_01/
+SIH_demo/
 
 # Logs
 *.log
