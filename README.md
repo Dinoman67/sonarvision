@@ -193,17 +193,7 @@ sonarvision/
 └── requirements.txt          # Python dependencies
 ```
 
----
 
-## 🎤 SIH 2026 Hackathon Pitch Flow
-
-1. **Baseline Proof**: Select **Clean Seabed Background** in the UI. Point out that complex sand ripple textures trigger **zero false alarms**.
-2. **Environmental Protection**: Select **NOAA SSS Debris Target**. Watch the model locate 2 marine debris targets with **90%+ confidence**.
-3. **Tactical MCM Defense**: Select **MILCO Mine Signature**. Demonstrate detection of 4 bottom mines with **70.7% precision**.
-4. **Maritime Safety & SAR**: Select **Submerged Shipwreck** & **Airplane Target**. Demonstrate large hull and aircraft wing detection.
-5. **Download Intelligence Report**: Click **Download PDF Report** to show the judges the formal, multi-class intelligence report with exact GPS/pixel coordinates and object classifications.
-
----
 
 ## 🇮🇳 Alignment with National & Global Goals
 
@@ -215,5 +205,5 @@ sonarvision/
 ## 📜 License & Acknowledgements
 
 * Released under the **MIT License**.
-* Developed for **Smart India Hackathon 2026** by Team **DeepSea Coders**.
+* Developed for **Smart India Hackathon 2026** by Team **Cold Start**.
 * Acoustic data sources: NOAA Hydrographic Survey Archives, NATO STO CMRE MILCO Benchmark, and Kaggle SSS Object Detection.
