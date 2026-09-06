@@ -7,13 +7,15 @@
 [![React](https://img.shields.io/badge/React-18%2B-61DAFB?logo=react&logoColor=black)](https://reactjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![ONNX Runtime](https://img.shields.io/badge/ONNX_Runtime-1.16%2B-005CED?logo=onnx&logoColor=white)](https://onnxruntime.ai)
+[![Hugging Face Model](https://img.shields.io/badge/🤗%20Hugging%20Face-Model%20(v6)-yellow?logo=huggingface&logoColor=white)](https://huggingface.co/Dinoman1221/sonarvision-yolov8-esi-v6)
+[![Hugging Face Dataset](https://img.shields.io/badge/🤗%20Hugging%20Face-Dataset%20(v6)-blue?logo=huggingface&logoColor=white)](https://huggingface.co/datasets/Dinoman1221/sonarvision-multisource-v6)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![SIH 2026](https://img.shields.io/badge/Smart_India_Hackathon-2026-orange)](https://www.sih.gov.in/)
 
 **Smart India Hackathon 2026 | Problem Statement: SIH26215**  
 *Real-time AI for Marine Debris, Naval Mine Countermeasures (MCM), Shipwrecks, and Submerged Aircraft Localization in Side-Scan Sonar (SSS) Imagery.*
 
-[Live Demo](#-quick-start) • [Architecture](#-solution-yolov8-esi-architecture) • [Benchmarks](#-empirical-benchmarks) • [Report Engine](#-automated-intelligence-reporting) • [Pitch Guide](#-sih-2026-hackathon-pitch-flow)
+[Model (Hugging Face)](https://huggingface.co/Dinoman1221/sonarvision-yolov8-esi-v6) • [Dataset (Hugging Face)](https://huggingface.co/datasets/Dinoman1221/sonarvision-multisource-v6) • [Live Demo](#-quick-start) • [Architecture](#-solution-yolov8-esi-architecture) • [Benchmarks](#-empirical-benchmarks) • [Report Engine](#-automated-intelligence-reporting) • [Pitch Guide](#-sih-2026-hackathon-pitch-flow)
 
 </div>
 
@@ -116,6 +118,26 @@ SonarVision bridges raw AI detections with hydrographic GIS operations by genera
 
 ---
 
+## 📥 Hugging Face Model & Dataset Downloads
+
+To download the trained production model weights or access the acoustic side-scan sonar benchmark dataset, visit our official Hugging Face repositories:
+
+| Resource | Hugging Face Repository | Description & Contents |
+| :--- | :--- | :--- |
+| **Model Weights (v6)** | [🤗 `Dinoman1221/sonarvision-yolov8-esi-v6`](https://huggingface.co/Dinoman1221/sonarvision-yolov8-esi-v6) | **YOLOv8-ESI v6 ONNX models** (`yolo_esi_v6_fp16.onnx` @ 5.9 MB, `yolo_esi_v6_fp32.onnx` @ 12 MB, and `yolo_esi_core_debris_fp16.onnx` @ 6.2 MB), model cards with test benchmarks, and standalone ONNX inference code. |
+| **Multi-Source Dataset (v6)** | [🤗 `Dinoman1221/sonarvision-multisource-v6`](https://huggingface.co/datasets/Dinoman1221/sonarvision-multisource-v6) | **924 MB archive** containing **5,558 side-scan sonar images** (4,033 train, 563 val, 962 strictly held-out test), `dataset.yaml`, 4 tactical target classes, and zero-leakage split protocol. |
+
+### CLI Download Commands:
+```bash
+# Download production v6 FP16 model weights into models/
+hf download Dinoman1221/sonarvision-yolov8-esi-v6 yolo_esi_v6_fp16.onnx --local-dir models/
+
+# Download the complete multi-source v6 dataset (5,558 images)
+hf download Dinoman1221/sonarvision-multisource-v6 sonarvision_multisource_v6.zip --repo-type dataset --local-dir datasets/
+```
+
+---
+
 ## ⚡ Quick Start
 
 ### 1. Clone & Run (One-Command Startup)
@@ -136,8 +158,13 @@ Open your browser to:
 ### 2. Activate Production ONNX Model
 
 To run live GPU/CPU ONNX tensor inference:
-1. Copy your trained model weights (`yolo_esi_fp16.onnx`) into the `models/` folder:
+1. Download or copy your trained model weights from Hugging Face into the `models/` folder:
    ```bash
+   # Download directly from Hugging Face
+   hf download Dinoman1221/sonarvision-yolov8-esi-v6 yolo_esi_v6_fp16.onnx --local-dir models/
+   cp models/yolo_esi_v6_fp16.onnx models/yolo_esi_fp16.onnx
+
+   # Or if you already have the file locally in Downloads:
    cp ~/Downloads/yolo_esi_v6_fp16.onnx models/yolo_esi_fp16.onnx
    ```
 2. Restart the app (`./start.sh`). The backend will automatically bind the model and display execution provider details (`CUDAExecutionProvider` or `CPUExecutionProvider`).
