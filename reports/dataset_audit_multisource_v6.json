@@ -1,0 +1,69 @@
+{
+  "dataset_name": "sonarvision_multisource_v6",
+  "total_samples": 5558,
+  "duplicates_removed": 9,
+  "classes": {
+    "0": "unknown_debris",
+    "1": "airplane",
+    "2": "mine",
+    "3": "wreck"
+  },
+  "splits": {
+    "train": {
+      "total_images": 4033,
+      "by_class": {
+        "background": 2628,
+        "unknown_debris": 555,
+        "mine": 426,
+        "airplane": 177,
+        "wreck": 247
+      },
+      "by_source": {
+        "NOAA": 3104,
+        "MILCO": 505,
+        "KAGGLE": 424
+      }
+    },
+    "val": {
+      "total_images": 563,
+      "by_class": {
+        "background": 381,
+        "unknown_debris": 70,
+        "mine": 46,
+        "airplane": 13,
+        "wreck": 53
+      },
+      "by_source": {
+        "NOAA": 436,
+        "MILCO": 61,
+        "KAGGLE": 66
+      }
+    },
+    "test": {
+      "total_images": 962,
+      "by_class": {
+        "background": 805,
+        "unknown_debris": 47,
+        "mine": 45,
+        "airplane": 12,
+        "wreck": 53
+      },
+      "by_source": {
+        "NOAA": 833,
+        "MILCO": 64,
+        "KAGGLE": 65
+      }
+    }
+  },
+  "class_distribution": {
+    "unknown_debris": 672,
+    "airplane": 202,
+    "mine": 517,
+    "wreck": 353
+  },
+  "sources": {
+    "NOAA": 4373,
+    "MILCO": 630,
+    "KAGGLE": 555
+  }
+}

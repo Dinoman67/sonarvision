@@ -19,6 +19,7 @@ def find_model_path() -> str:
         return env_path
 
     candidates = [
+        PROJECT_ROOT / "models" / "yolo_esi_v6_fp16.onnx",
         PROJECT_ROOT / "models" / "yolo_esi_fp16.onnx",
         PROJECT_ROOT / "models" / "best.onnx",
         PROJECT_ROOT / "yolo_esi_fp16.onnx",
@@ -34,7 +35,7 @@ def find_model_path() -> str:
             if onnx_files:
                 return str(onnx_files[0])
 
-    return str(PROJECT_ROOT / "models" / "yolo_esi_fp16.onnx")
+    return str(PROJECT_ROOT / "models" / "yolo_esi_v6_fp16.onnx")
 
 MODEL_PATH = find_model_path()
 
@@ -47,4 +48,10 @@ PORT = int(os.getenv("PORT", "8000"))
 MAX_UPLOAD_SIZE_MB = int(os.getenv("MAX_UPLOAD_SIZE_MB", "150"))
 ALLOWED_EXTENSIONS = {".tif", ".tiff", ".jpg", ".jpeg", ".png"}
 
-MODEL_CLASSES = {0: "marine_debris"}
+MODEL_CLASSES = {
+    0: "unknown_debris",
+    1: "airplane",
+    2: "mine",
+    3: "wreck"
+}
+

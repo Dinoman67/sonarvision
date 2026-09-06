@@ -1,0 +1,74 @@
+{
+  "total_samples": 5402,
+  "usable_samples": 5394,
+  "duplicate_count": 8,
+  "augmented_count": 296,
+  "original_count": 5098,
+  "by_source": {
+    "NOAA": 3540,
+    "MILCO": 1297,
+    "KAGGLE": 557
+  },
+  "by_split": {
+    "train": 3954,
+    "val": 706,
+    "test": 734
+  },
+  "by_class": {
+    "unknown": 3781,
+    "unknown_debris": 625,
+    "mine": 431,
+    "airplane": 204,
+    "wreck": 353
+  },
+  "by_class_split": {
+    "unknown_train": 2741,
+    "unknown_debris_train": 434,
+    "unknown_debris_val": 92,
+    "unknown_debris_test": 99,
+    "unknown_test": 541,
+    "unknown_val": 499,
+    "mine_train": 352,
+    "mine_test": 29,
+    "mine_val": 50,
+    "airplane_train": 180,
+    "airplane_val": 12,
+    "airplane_test": 12,
+    "wreck_test": 53,
+    "wreck_train": 247,
+    "wreck_val": 53
+  },
+  "by_source_split": {
+    "NOAA_train": 2508,
+    "NOAA_val": 513,
+    "NOAA_test": 519,
+    "MILCO_train": 1019,
+    "MILCO_test": 150,
+    "MILCO_val": 128,
+    "KAGGLE_train": 427,
+    "KAGGLE_val": 65,
+    "KAGGLE_test": 65
+  },
+  "by_detail_split": {
+    "h8_train": 2508,
+    "h8_val": 513,
+    "h8_test": 519,
+    "2010_train": 267,
+    "2010_test": 45,
+    "2010_val": 37,
+    "2015_train": 177,
+    "2015_test": 15,
+    "2015_val": 8,
+    "2017_train": 115,
+    "2017_val": 1,
+    "2018_val": 67,
+    "2018_train": 434,
+    "2018_test": 75,
+    "2021_test": 15,
+    "2021_val": 15,
+    "2021_train": 26,
+    "SSS_train": 427,
+    "SSS_val": 65,
+    "SSS_test": 65
+  }
+}

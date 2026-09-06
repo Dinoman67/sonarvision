@@ -45,6 +45,9 @@ hf_yolo_esi_model/
 results/
 runs/
 experiments/
+mock_runs/
+reports/visual_qa/
+SIH_demo/precomputed_reports/
 
 # Logs
 *.log

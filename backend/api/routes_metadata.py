@@ -28,10 +28,34 @@ async def get_available_samples():
             "filename": "sample_sss_marine_debris.png"
         },
         {
+            "id": "milco_mine",
+            "name": "MILCO Mine Signature (Klein 3500)",
+            "type": "MCM Sonar Image",
+            "description": "Side-scan sonar imagery containing acoustic highlights and shadows of bottom/moored mines.",
+            "has_geolocation": False,
+            "filename": "sample_milco_mine.png"
+        },
+        {
+            "id": "kaggle_wreck",
+            "name": "Submerged Shipwreck Target",
+            "type": "Shipwreck SSS Survey",
+            "description": "High-reflectivity seabed hull structure and acoustic shadow of a submerged vessel wreck.",
+            "has_geolocation": False,
+            "filename": "sample_kaggle_wreck.png"
+        },
+        {
+            "id": "kaggle_airplane",
+            "name": "Submerged Airplane Target",
+            "type": "Aircraft SSS Survey",
+            "description": "Acoustic side-scan sonar signature of submerged fuselage and wing structure.",
+            "has_geolocation": False,
+            "filename": "sample_kaggle_airplane.png"
+        },
+        {
             "id": "seabed_background",
-            "name": "Clean Seabed Background (No Debris)",
+            "name": "Clean Seabed Background (No Targets)",
             "type": "Seabed Acoustic Texture",
-            "description": "High-resolution side-scan sonar recording of natural seabed ripple textures without debris targets.",
+            "description": "High-resolution side-scan sonar recording of natural seabed ripple textures without targets.",
             "has_geolocation": False,
             "filename": "sample_seabed_background.png"
         },

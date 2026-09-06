@@ -99,6 +99,17 @@ def load_image_to_numpy(image_path: str) -> Tuple[np.ndarray, int, int, int]:
 
     return img, w, h, channels
 
+def format_object_type(class_name: str) -> str:
+    """Maps internal model class name to a clean human-readable object type."""
+    mapping = {
+        "unknown_debris": "Marine Debris",
+        "marine_debris": "Marine Debris",
+        "airplane": "Submerged Aircraft",
+        "mine": "Naval Mine",
+        "wreck": "Shipwreck",
+    }
+    return mapping.get(class_name.lower(), class_name.replace("_", " ").title())
+
 def run_full_pipeline(
     image_path: str,
     orig_filename: str,
@@ -139,6 +150,7 @@ def run_full_pipeline(
         conf = d["confidence"]
         confidences.append(conf)
         class_counts[cname] = class_counts.get(cname, 0) + 1
+        obj_type = format_object_type(cname)
 
         # Calculate geospatial coordinates using image metadata
         geo_dict = pixel_to_geographic(
@@ -152,6 +164,7 @@ def run_full_pipeline(
             id=d["id"],
             class_id=cid,
             class_name=cname,
+            object_type=obj_type,
             confidence=conf,
             bbox=BoundingBox(**d["bbox"]),
             center_pixel=CenterPixel(**d["center_pixel"]),
@@ -191,6 +204,8 @@ def run_full_pipeline(
     avg_conf = (sum(confidences) / len(confidences)) if confidences else None
 
     total_time_ms = round((time.perf_counter() - t_start) * 1000.0, 2)
+    detected_types = list(dict.fromkeys([format_object_type(c) for c in class_counts.keys()]))
+    primary_type = format_object_type(detections_list[0].class_name) if detections_list else None
 
     summary = AnalysisSummary(
         debris_detected=debris_detected,
@@ -198,11 +213,14 @@ def run_full_pipeline(
         highest_confidence=round(max_conf, 4) if max_conf else None,
         average_confidence=round(avg_conf, 4) if avg_conf else None,
         class_counts=class_counts,
+        detected_object_types=detected_types,
+        primary_object_type=primary_type,
         inference_time_ms=timing["inference_time_ms"],
         total_time_ms=total_time_ms,
         status="SUCCESS",
-        message="Analysis completed successfully." if debris_detected else "No objects exceeded the current confidence threshold."
+        message=f"Detected {total_dets} target(s): {', '.join(detected_types)}." if total_dets > 0 else "Clean seabed background — zero targets detected."
     )
+
 
     file_metadata = FileMetadata(
         filename=orig_filename,
@@ -308,6 +326,9 @@ async def analyze_sample_image(req: SampleRequest):
     sample_map = {
         "geotiff_debris": "sample_noaa_geotiff_debris.tif",
         "sss_marine_debris": "sample_sss_marine_debris.png",
+        "milco_mine": "sample_milco_mine.png",
+        "kaggle_wreck": "sample_kaggle_wreck.png",
+        "kaggle_airplane": "sample_kaggle_airplane.png",
         "seabed_background": "sample_seabed_background.png",
         "drone_aerial_geotagged": "sample_drone_aerial_geotagged.jpg"
     }

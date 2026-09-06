@@ -15,8 +15,9 @@ def generate_csv_report(
     # Header
     writer.writerow([
         "detection_id",
-        "class_id",
+        "object_type",
         "class_name",
+        "class_id",
         "confidence",
         "x1",
         "y1",
@@ -30,15 +31,26 @@ def generate_csv_report(
         "coordinate_source"
     ])
 
+    mapping = {
+        "unknown_debris": "Marine Debris",
+        "marine_debris": "Marine Debris",
+        "airplane": "Submerged Aircraft",
+        "mine": "Naval Mine",
+        "wreck": "Shipwreck",
+    }
+
     for det in detections:
         box = det.get("bbox", {})
         cp = det.get("center_pixel", {})
         geo = det.get("geolocation") or {}
+        cname = det.get("class_name", "")
+        obj_type = det.get("object_type") or mapping.get(str(cname).lower(), str(cname).replace("_", " ").title())
 
         writer.writerow([
             det.get("id"),
-            det.get("class_id"),
+            obj_type,
             det.get("class_name"),
+            det.get("class_id"),
             f"{det.get('confidence', 0.0):.4f}",
             box.get("x1"),
             box.get("y1"),

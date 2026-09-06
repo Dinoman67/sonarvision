@@ -1,0 +1,51 @@
+{
+  "total_samples": 2465,
+  "usable_samples": 2030,
+  "duplicate_count": 435,
+  "corrupt_count": 0,
+  "by_source": {
+    "NOAA": 679,
+    "MILCO": 825,
+    "KAGGLE": 526
+  },
+  "by_split": {
+    "train": 1362,
+    "val": 401,
+    "test": 267
+  },
+  "by_class": {
+    "unknown_debris": 1382,
+    "mine": 217,
+    "airplane": 80,
+    "drowning_victim": 19,
+    "wreck": 332
+  },
+  "by_source_split": {
+    "NOAA_train": 485,
+    "NOAA_val": 94,
+    "NOAA_test": 100,
+    "MILCO_train": 507,
+    "MILCO_test": 90,
+    "MILCO_val": 228,
+    "KAGGLE_test": 77,
+    "KAGGLE_train": 370,
+    "KAGGLE_val": 79
+  },
+  "by_class_split": {
+    "unknown_debris_train": 922,
+    "unknown_debris_val": 274,
+    "unknown_debris_test": 186,
+    "mine_train": 133,
+    "mine_test": 21,
+    "mine_val": 63,
+    "airplane_test": 11,
+    "airplane_train": 56,
+    "airplane_val": 13,
+    "drowning_victim_train": 14,
+    "drowning_victim_val": 3,
+    "drowning_victim_test": 2,
+    "wreck_train": 237,
+    "wreck_test": 47,
+    "wreck_val": 48
+  }
+}

@@ -23,6 +23,7 @@ class DetectionRecord(BaseModel):
     id: int = Field(..., description="Unique detection sequence ID")
     class_id: int = Field(..., description="Class integer ID")
     class_name: str = Field(..., description="Class name label")
+    object_type: Optional[str] = Field(None, description="Human-readable object classification type")
     confidence: float = Field(..., description="Confidence score between 0.0 and 1.0")
     bbox: BoundingBox = Field(..., description="Detection bounding box in pixel space")
     center_pixel: CenterPixel = Field(..., description="Center point in pixel space")
@@ -68,10 +69,13 @@ class AnalysisSummary(BaseModel):
     highest_confidence: Optional[float] = None
     average_confidence: Optional[float] = None
     class_counts: Dict[str, int] = Field(default_factory=dict)
+    detected_object_types: List[str] = Field(default_factory=list, description="Human-readable object types detected")
+    primary_object_type: Optional[str] = Field(None, description="Primary detected object type")
     inference_time_ms: float
     total_time_ms: float
     status: str
     message: str
+
 
 class AnalysisResponse(BaseModel):
     analysis_id: str

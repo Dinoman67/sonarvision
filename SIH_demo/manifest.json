@@ -1,0 +1,123 @@
+[
+  {
+    "index": 1,
+    "filename": "01_debris_noaa_003553.png",
+    "src_file": "NOAA_003553.png",
+    "category": "unknown_debris",
+    "object_type": "Marine Debris",
+    "sensor": "NOAA Klein 5000 SSS",
+    "description": "Real NOAA hydrographic survey pass containing high-reflectivity marine debris obstruction and acoustic shadow.",
+    "ground_truth": "2 Marine Debris targets",
+    "expected_detection": "2 detections @ 90.5% and 87.1% confidence"
+  },
+  {
+    "index": 2,
+    "filename": "02_debris_noaa_003621.png",
+    "src_file": "NOAA_003621.png",
+    "category": "unknown_debris",
+    "object_type": "Marine Debris",
+    "sensor": "NOAA Klein 5000 SSS",
+    "description": "Isolated seafloor debris target with sharp acoustic shadow on flat seabed.",
+    "ground_truth": "1 Marine Debris target",
+    "expected_detection": "1 detection @ 90.0% confidence"
+  },
+  {
+    "index": 3,
+    "filename": "03_mine_milco_000103.png",
+    "src_file": "MILCO_2015_000103.png",
+    "category": "mine",
+    "object_type": "Naval Mine",
+    "sensor": "MILCO Klein 3500 MCM SSS",
+    "description": "Naval mine countermeasure survey containing multiple bottom mine signatures.",
+    "ground_truth": "5 Naval Mine targets",
+    "expected_detection": "5 detections @ up to 89.8% confidence"
+  },
+  {
+    "index": 4,
+    "filename": "04_mine_milco_000111.png",
+    "src_file": "MILCO_2015_000111.png",
+    "category": "mine",
+    "object_type": "Naval Mine",
+    "sensor": "MILCO Klein 3500 MCM SSS",
+    "description": "Mine warfare exercise pass displaying multiple acoustic mine highlights and shadows.",
+    "ground_truth": "4 Naval Mine targets",
+    "expected_detection": "4 detections @ up to 88.1% confidence"
+  },
+  {
+    "index": 5,
+    "filename": "05_wreck_kaggle_000084.png",
+    "src_file": "KAGGLE_000084.png",
+    "category": "wreck",
+    "object_type": "Shipwreck",
+    "sensor": "High-Resolution Side-Scan Sonar",
+    "description": "Large submerged vessel shipwreck with prominent structural acoustic outline and elongated shadow.",
+    "ground_truth": "1 Shipwreck target",
+    "expected_detection": "1 detection @ 97.0% confidence"
+  },
+  {
+    "index": 6,
+    "filename": "06_wreck_kaggle_000265.png",
+    "src_file": "KAGGLE_000265.png",
+    "category": "wreck",
+    "object_type": "Shipwreck",
+    "sensor": "High-Resolution Side-Scan Sonar",
+    "description": "Submerged vessel wreck on seabed showing detailed hull boundary and debris field.",
+    "ground_truth": "1 Shipwreck target",
+    "expected_detection": "1 detection @ 95.1% confidence"
+  },
+  {
+    "index": 7,
+    "filename": "07_airplane_kaggle_000029.png",
+    "src_file": "KAGGLE_000029.png",
+    "category": "airplane",
+    "object_type": "Submerged Aircraft",
+    "sensor": "High-Resolution Side-Scan Sonar",
+    "description": "Sunken aircraft wreckage on seafloor exhibiting distinct wing and fuselage acoustic backscatter.",
+    "ground_truth": "1 Submerged Aircraft target",
+    "expected_detection": "1 detection @ 94.6% confidence"
+  },
+  {
+    "index": 8,
+    "filename": "08_airplane_kaggle_000055.png",
+    "src_file": "KAGGLE_000055.png",
+    "category": "airplane",
+    "object_type": "Submerged Aircraft",
+    "sensor": "High-Resolution Side-Scan Sonar",
+    "description": "Downed airplane wreck with clear empennage and wingspan shadow on ocean floor.",
+    "ground_truth": "1 Submerged Aircraft target",
+    "expected_detection": "1 detection @ 94.2% confidence"
+  },
+  {
+    "index": 9,
+    "filename": "09_clean_noaa_seabed.png",
+    "src_file": "NOAA_003542.png",
+    "category": "clean",
+    "object_type": "Clean Seabed (No Targets)",
+    "sensor": "NOAA Klein 5000 SSS",
+    "description": "Unobstructed NOAA seafloor survey track containing natural sediment texture with zero debris.",
+    "ground_truth": "Clean seabed background (0 targets)",
+    "expected_detection": "0 detections (Zero False Alarms)"
+  },
+  {
+    "index": 10,
+    "filename": "10_clean_milco_sand_ripples.png",
+    "src_file": "MILCO_2010_000054.png",
+    "category": "clean",
+    "object_type": "Clean Seabed (No Targets)",
+    "sensor": "MILCO Klein 3500 SSS",
+    "description": "Natural sand ripple acoustic textures without mine or debris anomalies.",
+    "ground_truth": "Clean seabed background (0 targets)",
+    "expected_detection": "0 detections (Zero False Alarms)"
+  },
+  {
+    "index": 11,
+    "filename": "11_clean_milco_deep_sand.png",
+    "src_file": "MILCO_2015_000120.png",
+    "category": "clean",
+    "object_type": "Clean Seabed (No Targets)",
+    "sensor": "MILCO Klein 3500 SSS",
+    "description": "Deep seabed acoustic scan with variable backscatter but zero anthropogenic debris or targets.",
+    "ground_truth": "Clean seabed background (0 targets)",
+    "expected_detection": "0 detections (Zero False Alarms)"
+  }
+]
